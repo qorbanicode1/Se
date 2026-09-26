@@ -18,30 +18,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
+      - name: Check API key
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "ERROR: OPENAI_API_KEY is missing"
+            exit 1
+          fi
+          echo "OPENAI_API_KEY exists"
+
       - name: Run Codex
         uses: openai/codex-action@v1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           permission-profile: ":workspace"
-
           prompt: |
-            You are a coding agent working on this repository.
-
-            Read the GitHub issue that triggered this workflow.
-
-            Understand the existing code before making changes.
-
-            Implement the requested change.
-
-            Requirements:
-            - Keep changes focused.
-            - Do not modify unrelated files.
-            - Follow the existing coding style.
-            - Run relevant tests if available.
-            - Do not delete existing functionality unless explicitly requested.
-
-            Issue title:
-            ${{ github.event.issue.title }}
-
-            Issue description:
-            ${{ github.event.issue.body }}
+            Inspect this repository and make no changes.
+            Report what you find.
