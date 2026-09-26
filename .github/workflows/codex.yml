@@ -1,0 +1,46 @@
+name: Codex Agent
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  codex:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Run Codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ":workspace"
+
+          prompt: |
+            You are a coding agent working on this repository.
+
+            Read the GitHub issue that triggered this workflow.
+
+            Understand the existing code before making changes.
+
+            Implement the requested change.
+
+            Requirements:
+            - Keep changes focused.
+            - Do not modify unrelated files.
+            - Follow the existing coding style.
+            - Run relevant tests if available.
+            - Do not delete existing functionality unless explicitly requested.
+
+            Issue title:
+            ${{ github.event.issue.title }}
+
+            Issue description:
+            ${{ github.event.issue.body }}
